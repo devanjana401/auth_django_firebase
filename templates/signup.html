@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding-top: 80px;
+        }
+        .form-box {
+            display: inline-block;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #ccc;
+        }
+        .input-box {
+            width: 250px;
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #aaa;
+            border-radius: 5px;
+        }
+        .btn {
+            padding: 10px 20px;
+            margin-top: 10px;
+            font-size: 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h2>Sign Up</h2>
+    <div class="form-box">
+        <form method="POST">
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="Username" class="input-box" required><br>
+            <input type="password" name="password" placeholder="Password" class="input-box" required><br>
+            <input type="text" name="phone" placeholder="Mobile Number" class="input-box" required><br>
+            <button type="button" class="btn" onclick="sendOTP()">Send OTP</button><br>
+            <input type="text" name="otp" placeholder="Enter OTP" class="input-box"><br>
+
+            <input type="submit" value="Sign Up" class="btn">
+        </form>
+    </div>
+    <script>
+        function sendOTP() {
+            alert("OTP sent to your mobile number."); // Placeholder for Firebase integration
+        }
+    </script>
+</body>
+</html>
