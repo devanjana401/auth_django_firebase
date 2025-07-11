@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Sign Up</title>
+    <title>Login with OTP</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <style>
@@ -33,7 +33,7 @@
             margin-bottom: 25px;
             font-size: 28px;
         }
-        #signup-form {
+        form {
             display: flex;
             flex-direction: column;
             gap: 15px;
@@ -63,7 +63,7 @@
             background-color: #1b5e20;
         }
         #otp-container {
-            display: none; /* Hidden by default */
+            display: none;
             flex-direction: column;
             gap: 10px;
         }
@@ -98,29 +98,49 @@
             measurementId: "G-JKWK5BDDMQ"
         };
         firebase.initializeApp(firebaseConfig);
-
         let verificationId;
-        let recaptchaVerifier;
 
-        function sendOTP() {
-            const phone = "+91" + document.getElementById("mobile").value;
-            if (window.recaptchaVerifier) {
-                window.recaptchaVerifier.clear();
+        async function sendOTP() {
+            const mobile = document.getElementById("mobile").value;
+            if (!mobile) {
+                alert("Please enter your mobile number.");
+                return;
             }
-            window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-                'size': 'invisible'
+
+            const abc = new FormData();
+            abc.append("mobile", mobile);
+
+            const response = await fetch("/check-user/", {
+                method: "POST",
+                body: abc,
             });
-            
-            firebase.auth().signInWithPhoneNumber(phone, window.recaptchaVerifier)
-                .then(confirmationResult => {
-                    verificationId = confirmationResult.verificationId;
-                    document.getElementById('otp-container').style.display = 'flex';
-                    document.getElementById('success-message').style.display = 'block';
-                    document.getElementById('send-otp-btn').style.display = 'none';
-                }).catch(err => {
-                    alert("Error sending OTP: " + err.message);
+
+            const data = await response.json();
+
+            if (data.status === true) {
+                const phone = "+91" + mobile;
+
+                if (window.recaptchaVerifier) {
                     window.recaptchaVerifier.clear();
+                }
+
+                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                    'size': 'invisible'
                 });
+                firebase.auth().signInWithPhoneNumber(phone, window.recaptchaVerifier)
+                    .then(confirmationResult => {
+                        verificationId = confirmationResult.verificationId;
+                        document.getElementById('otp-container').style.display = 'flex';
+                        document.getElementById('success-message').style.display = 'block';
+                        document.getElementById('send-otp-btn').style.display = 'none';
+                    })
+                    .catch(error => {
+                        alert("Error sending OTP: " + error.message);
+                        window.recaptchaVerifier.clear();
+                    });
+            } else {
+                alert("Mobile number not registered.");
+            }
         }
         function verifyOTPAndSubmit() {
             const otp = document.getElementById("otp").value;
@@ -141,11 +161,9 @@
 </head>
 <body>
     <div class="container">
-        <h2>Create Account</h2>
+        <h2>Login with OTP</h2>
         <form id="signup-form" method="POST">
             {% csrf_token %}
-            <input type="text" name="username" placeholder="Username" required>
-            <input type="password" name="password" placeholder="Password" required>
             <input type="text" name="mobile" id="mobile" placeholder="Mobile Number" required>
             <div id="recaptcha-container"></div>
             <button type="button" id="send-otp-btn" onclick="sendOTP()">Send OTP</button>
@@ -154,10 +172,17 @@
             </div>
             <div id="otp-container">
                 <input type="text" id="otp" placeholder="Enter OTP" required>
-                <button type="button" onclick="verifyOTPAndSubmit()">Verify & Sign Up</button>
+                <button type="button" onclick="verifyOTPAndSubmit()">Login</button>
             </div>
         </form>
-        <p class="message">Already have an account? <a href="/">Login</a></p>
+
+        {% if messages %}
+           {% for message in messages %}
+              <p style="color:red;">{{ message }}</p>
+           {% endfor %}
+        {% endif %}
+
+        <p class="message">Login with password <a href="/">Login</a></p>
     </div>
 </body>
 </html>
