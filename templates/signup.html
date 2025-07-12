@@ -156,6 +156,15 @@
                 <input type="text" id="otp" placeholder="Enter OTP" required>
                 <button type="button" onclick="verifyOTPAndSubmit()">Verify & Sign Up</button>
             </div>
+            {% if messages %}
+            <div>
+                {% for message in messages %}
+                    <div style="color: {% if message.tags == 'success' %}green{% else %}red{% endif %}; text-align: center; margin-bottom: 10px;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+            {% endif %}
         </form>
         <p class="message">Already have an account? <a href="/">Login</a></p>
     </div>

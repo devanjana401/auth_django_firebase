@@ -115,11 +115,15 @@
         <div class="signup-link">
             Don't have an account? <a href="/signup">Sign up</a>
         </div>
-        {% if messages %}
-           {% for message in messages %}
-              <p style="color:red;">{{ message }}</p>
-           {% endfor %}
-        {% endif %}
+            {% if messages %}
+            <div>
+                {% for message in messages %}
+                    <div style="color: {% if message.tags == 'success' %}green{% else %}red{% endif %}; text-align: center; margin-bottom: 10px;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+            {% endif %}
     </form>
 </div>
 </body>
